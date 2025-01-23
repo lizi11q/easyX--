@@ -1,0 +1,54 @@
+#include<graphics.h>
+#include<conio.h>
+#include<math.h>
+#define PI 3.14
+int main() {
+	initgraph(640, 480);
+	setbkcolor(WHITE);
+	cleardevice();
+	
+
+	setlinestyle(PS_SOLID, 5);
+	setfillcolor(YELLOW);
+	setlinecolor(BLUE);
+	circle(50, 50, 50);
+	fillcircle(150, 50, 50);
+	solidcircle(250, 50, 50);
+
+	double n = 4.0 / 5.0;
+	pie(0, 100, 100, 200, acos(n), PI * 3 / 4); 
+	
+	
+	//VS2022,配置属性->高级->高级属性->字符集->使用多字节字符集(在easyx打印字符)
+	//设置字体颜色
+	settextcolor(RED);
+	//设置字体样式,大小、字体。0表示自适应
+	settextstyle(50,0,"楷体");
+	//设置背景模式 TRANSPARENT（透明）
+	setbkmode(TRANSPARENT);
+	//输出
+	outtextxy(50, 100, "lizi test");
+
+	//设置字体颜色RGB
+	//利用QQ截图查找RGB值
+	settextcolor(RGB(0, 108, 190));
+	outtextxy(50, 150, "lizi test");
+
+	//文字居中
+	int x1, y1, x2, y2;
+	x1 = 50;
+	y1 = 250;
+	x2 = 400;
+	y2 = 350;
+	fillrectangle(x1, y1, x2, y2);
+	char arr[] = "居中显示test";
+	int width = textwidth(arr);
+	int height = textheight(arr);
+	outtextxy((x2 - x1 - width) / 2 + x1, (y2 - y1 - height) / 2 + y1, arr);
+
+	_getch();
+	closegraph();
+
+	return 0;
+}
+
