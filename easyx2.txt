@@ -1,0 +1,56 @@
+#include<stdio.h>
+#include<easyx.h>
+#include<conio.h>
+#include<time.h>
+int main() {
+	//EX_DBLCLKS 识别双击
+	initgraph(800, 600, EX_SHOWCONSOLE | EX_DBLCLKS);
+	setbkcolor(WHITE);
+	cleardevice();
+
+	IMAGE img;
+	loadimage(&img, "C:\\Users\\28931\\Desktop\\练习\\picture1.png", 700, 500);
+	putimage(0, 0, &img);
+
+	//消息
+	ExMessage msg = { 0 };
+	clock_t firstclicktime = 0;
+	bool isDoubleClick = false;
+	while (true) {
+		if (peekmessage(&msg, EX_MOUSE)) {
+			switch (msg.message) {
+			case WM_LBUTTONDOWN:
+				if (clock() - firstclicktime < 500) {
+					firstclicktime = 0;
+					isDoubleClick = true;
+				}
+				else {
+					firstclicktime = clock();
+					isDoubleClick = false;
+				}
+				break;
+			case WM_RBUTTONDOWN:
+				printf("右键单击  pos(%d,%d)\n", msg.x, msg.y);
+				break;
+			case WM_MBUTTONDOWN:
+				printf("中键单击  pos(%d,%d)\n", msg.x, msg.y);
+				break;
+			case WM_MOUSEWHEEL:
+				printf("滚轮滚动  dir(%d)\n", msg.wheel);//120 朝前滚  -120 朝后滚
+				break;
+			case WM_LBUTTONDBLCLK:
+				printf("左键双击  pos(%d %d)\n", msg.x, msg.y);
+				isDoubleClick = true;
+				break;
+			}
+		}
+
+		if (firstclicktime != 0 && clock() - firstclicktime >= 500 && !isDoubleClick) {
+			printf("左键单击  pos(%d %d)\n", msg.x, msg.y);
+			firstclicktime = 0;
+		}
+	}
+	_getch();
+	closegraph();
+	return 0;
+}
