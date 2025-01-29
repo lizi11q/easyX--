@@ -1,0 +1,77 @@
+#include <stdio.h>
+#include <easyx.h>
+#include <conio.h>
+#include <Windows.h>  // 添加Windows头文件以使用相关API
+
+ExMessage msg = { 0 };
+bool inArea(int CURx, int CURy, int x, int y, int w, int h);
+bool Button(int x, int y, int w, int h, const char* text);
+
+int main() {
+    initgraph(700, 500, EX_SHOWCONSOLE);
+    setbkcolor(RGB(242, 222, 189));
+    cleardevice();
+
+    while (true) {
+        peekmessage(&msg, EX_MOUSE);  // 获取鼠标消息
+
+        BeginBatchDraw();
+        cleardevice();  // 清空屏幕，避免残影
+
+        if (Button(20, 20, 150, 35, "Start")) {
+            printf("Start\n");
+        }
+
+        EndBatchDraw();
+        msg.message = 0;  // 重置消息
+    }
+
+    _getch();
+    closegraph();
+    return 0;
+}
+
+bool inArea(int CURx, int CURy, int x, int y, int w, int h) {
+    return (CURx > x && CURx < x + w && CURy > y && CURy < y + h);
+}
+bool Button(int x, int y, int w, int h, const char* text) {
+    setlinecolor(BLACK);
+    setlinestyle(PS_SOLID, 2);
+
+    // 获取实时鼠标位置和左键状态
+    POINT pt;
+    GetCursorPos(&pt);
+    ScreenToClient(GetHWnd(), &pt);
+    int currentX = pt.x;
+    int currentY = pt.y;
+    bool isLeftButtonDown = (GetAsyncKeyState(VK_LBUTTON) & 0x8000); // 实时检测左键是否按下
+
+    // 判断状态（优先级：按下 > 悬停 > 默认）
+    bool hover = inArea(currentX, currentY, x, y, w, h);
+    bool clicked = isLeftButtonDown && hover; // 按住期间持续判断
+
+    // 设置颜色
+    if (clicked) {
+        setfillcolor(RGB(249, 50, 32));  // 按下颜色
+    }
+    else if (hover) {
+        setfillcolor(RGB(191, 55, 43)); // 悬停颜色
+    }
+    else {
+        setfillcolor(RGB(200, 111, 103)); // 默认颜色
+    }
+
+    // 绘制按钮
+    fillroundrect(x, y, x + w, y + h, 5, 5);
+
+    // 绘制文本
+    setbkmode(TRANSPARENT);
+    settextcolor(BLACK);
+    settextstyle(20, 0, "楷体");
+    int width = textwidth(text);
+    int height = textheight(text);
+    outtextxy(x + (w - width) / 2, y + (h - height) / 2, text);
+
+    // 返回是否被点击（只在按下瞬间触发）
+    return (msg.message == WM_LBUTTONDOWN && hover);
+}
